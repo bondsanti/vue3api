@@ -16,6 +16,11 @@ const categoryRoutes=[
                 name:"Categoryindex",
                 component: Categoryindex,
               },
+              {
+                path:"insert",
+                name:"Categoryinsert",
+                component: Categoryinsert,
+              },
         ]
     },
 
