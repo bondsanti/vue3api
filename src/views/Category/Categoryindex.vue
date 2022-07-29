@@ -1,5 +1,8 @@
 <template>
   <div class="content-wrapper">
+    <div class="preloader flex-column justify-content-center align-items-center" v-if="loading">
+      <img class="animation__shake" src="https://adminlte.io/themes/v3/dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
+    </div>
     <!-- Content Header (Page header) -->
     <div class="content-header">
       <div class="container-fluid">
@@ -27,7 +30,7 @@
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">DataTable with default features</h3>
+                <h3 class="card-title"><router-link class="btn btn-primary btn-sm mr-2" to="/category/insert"><i class="fas fa-add"></i> Create</router-link></h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -74,18 +77,39 @@ export default {
   name: "Category",
   setup() {
     const category = ref([]);
+    const errorMessage = ref("");
+    const loading = ref(false);
+
 
     const getData = async () => {
-      const response = await axios.get(
-        "https://api.codingthailand.com/api/category"
-      );
-      category.value = response.data;
-      //console.log(response.data);
+      try {
+        loading.value = true;
+        const response = await axios.get(
+          "https://api.codingthailand.com/api/category"
+        );
+        category.value = response.data;
+        
+        //console.log(response.data);
+      } catch (error) {
+        //console.log(error);
+        errorMessage.value = error.response.data.message;
+
+        //console.log(errorMessage);
+        //errorMessage.value ="เกิดข้อผิดพลาด";
+
+        Swal.fire({
+          title: errorMessage.value,
+          icon: "warning",
+          type: "warning",
+        });
+      } finally{
+        loading.value = false;
+      }
     };
     onMounted(() => {
       getData();
     });
-    return { category };
+    return { category , loading};
   },
 };
 </script>
