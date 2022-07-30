@@ -21,6 +21,11 @@ const categoryRoutes=[
                 name:"Categoryinsert",
                 component: Categoryinsert,
               },
+              {
+                path:"edit/:id", // route parameter
+                name:"Categoryedit",
+                component: Categoryedit,
+              },
         ]
     },
 

@@ -61,41 +61,41 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { BASE_API_URL } from '@/constants';
 
 
 export default {
   name: "Categoryinsert",
 
   setup(){
-    const router = useRouter;
+    const router = useRouter();
     const name = ref("");
     const alertMassage = ref("");
 
     const onSubmit = async () => {
       try {
-        const response =  await axios.post("https://api.codingthailand.com/api/category",{
+        const response =  await axios.post(`${BASE_API_URL}/api/category`,{
           name:name.value
         });
 
-        alertMassage.value = response.data.message;
+        alertMassage.value = response.data.message;     
 
-        Swal.fire({
-          position: 'top-end',
+        await Swal.fire({
+          position: 'center',
           icon: 'success',
           title: alertMassage.value ,
           showConfirmButton: false,
           timer: 1500
         });
 
-        //router.push("/category");
-        router.replace("/category")
+        router.replace("/category");
+
+        
 
       } catch (error) {
-        
-        
-          
+
           Swal.fire({
-          position: 'top-end',
+          position: 'center',
           icon: 'error',
           title: "ไม่สามารถบันทึกข้อมูลได้",
           showConfirmButton: false,

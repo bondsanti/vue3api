@@ -56,15 +56,6 @@
                     </tr>
                   </tbody>
                 </table>
-                <div v-if="category.length" class="mt-3">
-                    <v-pagination
-                      v-model="page"
-                      :pages="totalPage"
-                      :range-size="10"
-                      active-color="#DCEDFF"
-                      @update:modelValue="getData"
-                    />
-                </div>
               </div>
               <!-- /.card-body -->
             </div>
@@ -83,30 +74,23 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { BASE_API_URL } from "@/constants";
-import VPagination from "@hennge/vue3-pagination";
-import "@hennge/vue3-pagination/dist/vue3-pagination.css";
+import { useRouter} from "vue-router";
 
 export default {
   name: "Category",
-  components: {
-    VPagination
-  },
   setup() {
     const category = ref([]);
     const alertMassage = ref("");
     const loading = ref(false);
-    // const router = useRouter();
-    const page = ref(1);
-    const totalPage = ref(0);
+    const router = useRouter();
 
 
-    const getData = async (page) => {
+    const getData = async () => {
       try {
         loading.value = true;
-        const response = await axios.get(`${BASE_API_URL}/api/category?page=${page}&page_size=10`);
-        category.value = response.data.data;
+        const response = await axios.get(`${BASE_API_URL}/api/category`);
+        category.value = response.data;
         
-        totalPage.value = response.data.last_page;
         //console.log(response.data);
       } catch (error) {
         //console.log(error);
@@ -126,7 +110,7 @@ export default {
     };
 
     onMounted(() => {
-      getData(page.value);
+      getData();
     });
 
 
@@ -171,7 +155,7 @@ export default {
       }
     }
 
-    return { category , loading ,onDeleteById ,page, totalPage,getData};
+    return { category , loading ,onDeleteById};
     
    
 
