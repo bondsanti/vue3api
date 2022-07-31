@@ -58,54 +58,13 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router';
-import { BASE_API_URL } from '@/constants';
-
+import { useInsert } from './use/crud-category';
 
 export default {
   name: "Categoryinsert",
 
   setup(){
-    const router = useRouter();
-    const name = ref("");
-    const alertMassage = ref("");
-
-    const onSubmit = async () => {
-      try {
-        const response =  await axios.post(`${BASE_API_URL}/api/category`,{
-          name:name.value
-        });
-
-        alertMassage.value = response.data.message;     
-
-        await Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: alertMassage.value ,
-          showConfirmButton: false,
-          timer: 1500
-        });
-
-        router.replace("/category");
-
-        
-
-      } catch (error) {
-
-          Swal.fire({
-          position: 'center',
-          icon: 'error',
-          title: "ไม่สามารถบันทึกข้อมูลได้",
-          showConfirmButton: false,
-          timer: 1500
-        });
-        
-      }
-     
-
-   }
+    const {name , onSubmit} = useInsert();
     
     return { name ,onSubmit}
   }

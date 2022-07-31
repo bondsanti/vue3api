@@ -80,18 +80,100 @@
 </template>
 
 <script>
-import {useDataAndDel} from './use/crud-category';
+import { ref, onMounted } from "vue";
+import axios from "axios";
+import { BASE_API_URL } from "@/constants";
 import VPagination from "@hennge/vue3-pagination";
+import "@hennge/vue3-pagination/dist/vue3-pagination.css";
+
 export default {
   name: "Category",
   components: {
     VPagination
   },
   setup() {
+    const category = ref([]);
+    const alertMassage = ref("");
+    const loading = ref(false);
+    // const router = useRouter();
+    const page = ref(1);
+    const totalPage = ref(0);
 
-    const {category , loading ,onDeleteById ,page, totalPage,getData} = useDataAndDel();
-    
+
+    const getData = async (page) => {
+      try {
+        loading.value = true;
+        const response = await axios.get(`${BASE_API_URL}/api/category?page=${page}&page_size=10`);
+        category.value = response.data.data;
+        
+        totalPage.value = response.data.last_page;
+        //console.log(response.data);
+      } catch (error) {
+        //console.log(error);
+        alertMassage.value = error.response.data.message;
+
+        //console.log(errorMessage);
+        //errorMessage.value ="เกิดข้อผิดพลาด";
+
+        Swal.fire({
+          title: alertMassage.value,
+          icon: "warning",
+          type: "warning",
+        });
+      } finally{
+        loading.value = false;
+      }
+    };
+
+    onMounted(() => {
+      getData(page.value);
+    });
+
+
+    const onDeleteById = async (id) => {
+      try {
+        await Swal.fire({
+          title: 'ยืนยันการลบข้อมูล',
+          text: "คุณต้องการลบข้อมูลนี้หรือไม่?",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'ยืนยันการลบ',
+          cancelButtonText: 'ยกเลิก'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            
+            axios.delete(`${BASE_API_URL}/api/category/${id}`);
+        
+            Swal.fire(
+              'สำเร็จ!',
+              'ข้อมูลของคุณถูกลบเรียบร้อย..',
+              'success',
+            );
+           
+          }
+         
+        })
+
+
+
+      } catch (error) {
+        
+        alertMassage.value = error.response.data.message;
+
+        Swal.fire({
+          title: alertMassage.value,
+          icon: "warning",
+          type: "warning",
+        });
+        
+      }
+    }
+
     return { category , loading ,onDeleteById ,page, totalPage,getData};
+    
+   
 
   },
 };
