@@ -57,15 +57,9 @@
 
           <li class="nav-header">Howto</li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="#" class="nav-link" @click.prevent="onLogout">
               <i class="nav-icon far fa-circle text-danger"></i>
-              <p class="text">Important</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon far fa-circle text-warning"></i>
-              <p>Warning</p>
+              <p class="text">ออกจากระบบ</p>
             </a>
           </li>
           <li class="nav-item">
@@ -83,8 +77,20 @@
 </template>
 
 <script>
+import {useRouter} from 'vue-router'
 export default {
-name: "Sildbar"
+name: "Sildbar",
+
+setup(){
+
+  const router = useRouter();
+
+  const onLogout = async() =>{
+    localStorage.removeItem("token");
+    router.replace("/login");
+  }
+  return {onLogout}
+}
 }
 </script>
 

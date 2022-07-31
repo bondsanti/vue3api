@@ -1,4 +1,5 @@
-<template><div class="login-page">
+<template>
+<div class="login-page">
   <div class="login-box">
     <div class="login-logo">
       <a href=""><b>Admin</b> Login</a>
@@ -7,9 +8,9 @@
     <div class="card">
       <div class="card-body login-card-body">
 
-        <form action="" method="post">
+        <form @submit.prevent="onSubmit">
           <div class="input-group mb-3">
-            <input type="email" class="form-control" placeholder="Email" />
+            <input v-model="email" type="text" class="form-control" placeholder="Email" />
             <div class="input-group-append">
               <div class="input-group-text">
                 <span class="fas fa-envelope"></span>
@@ -18,6 +19,7 @@
           </div>
           <div class="input-group mb-3">
             <input
+              v-model="password"
               type="password"
               class="form-control"
               placeholder="Password"
@@ -30,7 +32,7 @@
           </div>
           <div class="row">
             <div class="col-12">
-              <button type="submit" class="btn btn-primary btn-block">
+              <button type="submits" class="btn btn-primary btn-block">
                 Sign In
               </button>
             </div>
@@ -44,8 +46,64 @@
 </template>
 
 <script>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { BASE_API_URL } from "@/constants";
+import  Axios  from 'axios';
+
 export default {
   name: "Login",
+
+  setup(){
+
+    const email = ref("");
+    const password = ref("");
+    const alertMassage = ref("");
+    const router = useRouter();
+
+    const onSubmit = async ()=> {
+
+      try {
+
+        // console.log(email.value);
+        // console.log(password.value);
+        const response = await Axios.post(`${BASE_API_URL}/api/login`,{
+          headers: { 'content-type': 'application/json' },
+          email:email.value,
+          password:password.value
+        })
+        console.log(response.data);
+
+           
+
+        await Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: "เข้าสู่ระบบสำเร็จ",
+          showConfirmButton: false,
+          timer: 1500
+        });
+
+        localStorage.setItem("token",JSON.stringify(response.data));
+        router.replace("/");
+
+      } catch (error) {
+        alertMassage.value = error.response.data.message;     
+
+
+          Swal.fire({
+          position: 'center',
+          icon: 'error',
+          title: alertMassage.value,
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
+
+    }
+
+    return {email,password,onSubmit}
+  }
 };
 </script>
 

@@ -5,12 +5,14 @@ import AboutView from '../views/AboutView.vue';
 import ProductView from '../views/ProductView.vue';
 //import Categoryindex from '../views/Category/Categoryindex.vue';
 import categoryRoutes from '../views/Category/category-route';
+import Login from '../views/Login.vue';
 
 const routes = [
   {
     path: '/',
     name: 'Dashboard',
     component: Dashboard,
+    meta:{requireAuth : true},
     children:[
       {
         path:"",
@@ -33,8 +35,7 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-   component: () =>
-   import(/* webpackChunkName: "login */"../views/Login.vue"),
+    component: Login,
   },
   
 ]
@@ -43,6 +44,22 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
   linkExactActiveClass:"active",
+})
+
+router.beforeEach((to,from,next)=>{
+
+ if(to.matched.some((record)=>record.meta.requireAuth))
+ {
+  const token = localStorage.getItem("token");
+  if(!token){
+    next("/login");
+  }else{
+    next();
+  }
+
+ }else{
+next();
+ }
 })
 
 export default router
