@@ -58,15 +58,84 @@
 </template>
 
 <script>
-import { useEdit } from './use/crud-category';
+import { ref,onMounted } from 'vue';
+import axios from 'axios';
+import { useRouter,useRoute } from 'vue-router';
+import { BASE_API_URL } from '@/constants';
+
 
 export default {
   name: "Categoryedit",
 
   setup(){
+    const router = useRouter();
+    const route = useRoute();
+    const name = ref("");
+    const alertMassage = ref("");
+    const id = ref(0);
    
-    const {name, onSubmit} = useEdit();
-    return { name, onSubmit}
+   onMounted(() =>{
+      id.value = route.params.id;
+      //alert(id.value)
+      getDataById(id.value);
+    })
+
+    const getDataById = async (id) => {
+      try {
+          const response =  await axios.get(`${BASE_API_URL}/api/category/${id}`);
+          name.value = response.data.name
+
+      } catch (error) {
+        alertMassage.value = error.response.data.message;
+
+        //console.log(errorMessage);
+        //errorMessage.value ="เกิดข้อผิดพลาด";
+
+        Swal.fire({
+          title: alertMassage.value,
+          icon: "warning",
+          type: "warning",
+        });
+      }
+    }
+
+    const onSubmit = async () => {
+      try {
+        const response =  await axios.put(`${BASE_API_URL}/api/category`,{
+          id: id.value,
+          name: name.value
+        });
+
+        alertMassage.value = response.data.message;     
+
+        await Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: alertMassage.value ,
+          showConfirmButton: false,
+          timer: 1500
+        });
+
+        router.replace("/category");
+
+        
+
+      } catch (error) {
+
+          Swal.fire({
+          position: 'center',
+          icon: 'error',
+          title: "ไม่สามารถบันทึกข้อมูลได้",
+          showConfirmButton: false,
+          timer: 1500
+        });
+        
+      }
+     
+
+   }
+    
+    return { name ,onSubmit}
   }
 }
 </script>
